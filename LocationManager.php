@@ -6,9 +6,9 @@
       parent::__construct();
     }
 
-    function findMarkers($coords, $range_to, $limit=100){
+    function findMarkers($coords, $range_to, $limit=null){
       $limitclause = "";
-      if(!is_null($limit) && is_numeric($limit))
+      if(!empty($limit) && is_numeric($limit))
       {
          $limitclause = "LIMIT " . $limit;
       }

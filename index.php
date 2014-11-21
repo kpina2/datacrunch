@@ -19,7 +19,15 @@
         </style>
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="css/main.css">
-
+        <script>
+            <?php
+              $ajaxurl = "/ajax.php";
+              if($_SERVER['HTTP_HOST'] == 'kaypiem.com'){
+                $ajaxurl = "/datacrunch/ajax.php";
+              }
+            ?>
+            ajaxurl = '<?php echo $ajaxurl; ?>';
+        </script>
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
     <body>
@@ -62,6 +70,7 @@
 
         <div class="col-md-4">
           <p><a class="btn btn-default" role="button" id='find-near-me'>Near Me</a></p>
+          <p><a class="btn btn-default" role="button" id='show-all'>Show All</a></p>
         </div>
        
 
@@ -90,85 +99,25 @@
             // ga('create','UA-XXXXX-X');ga('send','pageview');
         </script>
         <script>
-          var user_position={};
           
           
           $(document).ready(function(){
-            var markers = new Array();
-            var mapOptions = {
-              center: {  lat: 36.174465, lng: -86.767960 },
-              zoom: 11
-            };
-            var infowindow = new google.maps.InfoWindow({
-              maxWidth: 240
-            });
-            var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-            function showPosition(position) {
-              user_position = position;
-              getMarkers(0.9);
-            }
-            function getMarkers(radius){
-              var pos = new google.maps.LatLng(user_position.coords.latitude, user_position.coords.longitude);
-              map.setCenter(pos);
-              map.setZoom(13);
+            $().markerBrowser("init");
 
-              postdata = {
-                cmd: "markers",
-                coords: {
-                  lat: user_position.coords.latitude,
-                  lon: user_position.coords.longitude
-                },
-                radius: radius
-              };
-              <?php
-                $ajaxurl = "/ajax.php";
-                if($_SERVER['HTTP_HOST'] == 'kaypiem.com'){
-                  $ajaxurl = "/datacrunch/ajax.php";
-                }
-              ?>
-              $.ajax({
-                url: "<?php echo $ajaxurl; ?>",
-                data: postdata,
-                method: "post",
-                dataType: "json",
-                success: function(response){
-                  if($.isEmptyObject(response)){
-
-                  }else{
-                    i=0;
-                    for(marker in response){
-                      marker_list = response;
-                      m = response[marker];
-                      
-                      m_coords = new google.maps.LatLng(m.lat, m.lon);
-                      
-                      var m_marker = new google.maps.Marker({
-                          position: m_coords,
-                          map: map,
-                          title: m.title,
-                          m_id: i
-                      });
-                      markers[i] =response[marker];
-
-                      google.maps.event.addListener(m_marker, 'click', function(){
-                          infowindow.setContent("<h3>" + markers[this.m_id].title + "</h3>"+ markers[this.m_id].marker_text);
-                          infowindow.open(map, this);
-                      });
-                      i++;
-                    }
-                  }
-                }
+            $("#show-all").click(function(){
+              $().markerBrowser("getmarkers", {
+                opt_radius: 10,
+                opt_zoom: 10,
+                use_user_position: false
               });
-            }
+            });
 
             $("#find-near-me").click(function(){
-              if (navigator.geolocation) {
-                if($.isEmptyObject(user_position)){
-                  navigator.geolocation.getCurrentPosition(showPosition);
-                }else{
-                  getMarkers(0.9);
-                }
-              }
+              $().markerBrowser("getmarkers", {
+                opt_radius: 0.9,
+                opt_zoom: 13,
+                use_user_position: true
+              });
             });
           });
           
