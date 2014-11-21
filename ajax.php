@@ -1,4 +1,5 @@
 <?php
+	require "DBconnection.php.inc";
 	require "AjaxController.php";
 	require "LocationManager.php";
 	$ajaxOjb = new AjaxController;

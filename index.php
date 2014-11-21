@@ -120,9 +120,14 @@
                 },
                 radius: radius
               };
-              
+              <?php
+                $ajaxurl = "/ajax.php";
+                if($_SERVER['HTTP_HOST'] == 'kaypiem.com'){
+                  $ajaxurl = "/datacrunch/ajax.php";
+                }
+              ?>
               $.ajax({
-                url: "/ajax.php",
+                url: "<?php echo $ajaxurl; ?>",
                 data: postdata,
                 method: "post",
                 dataType: "json",
@@ -134,7 +139,7 @@
                     for(marker in response){
                       marker_list = response;
                       m = response[marker];
-                      console.log(m);
+                      
                       m_coords = new google.maps.LatLng(m.lat, m.lon);
                       
                       var m_marker = new google.maps.Marker({
@@ -146,7 +151,6 @@
                       markers[i] =response[marker];
 
                       google.maps.event.addListener(m_marker, 'click', function(){
-                          console.log(this.m_id);
                           infowindow.setContent("<h3>" + markers[this.m_id].title + "</h3>"+ markers[this.m_id].marker_text);
                           infowindow.open(map, this);
                       });

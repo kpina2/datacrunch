@@ -1,9 +1,9 @@
 <?php
-  class LocationManager{
+  class LocationManager extends DBconnection{
     public $range_from = 0;
     public $locationtable = "marker";
     public function __construct(){
-      $this->pdo = new PDO("mysql:host=localhost;dbname=kpm_datacrunch", "KPdaAdmin", "4dmin4dmin");
+      parent::__construct();
     }
 
     function findMarkers($coords, $range_to, $limit=100){
