@@ -2,13 +2,13 @@
 	require "DBconnection.php.inc";
 	require "AjaxController.php";
 	require "LocationManager.php";
-	$ajaxOjb = new AjaxController;
+	$ajaxCtlr = new AjaxController;
 
-	if(isset($_REQUEST['cmd']) && in_array($_REQUEST['cmd'], $ajaxOjb->commands)){
+	if(isset($_REQUEST['cmd']) && in_array($_REQUEST['cmd'], $ajaxCtlr->commands)){
 		
 		switch ($_REQUEST['cmd']){
 			case "markers":
-				$ajaxOjb->getMarkers($_REQUEST);
+				$ajaxCtlr->getMarkers($_REQUEST);
 				break;
 		}
 	}else{

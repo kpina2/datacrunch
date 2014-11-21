@@ -38,6 +38,7 @@
         opt_zoom: 11,
         opt_lat: 36.174465,
         opt_lon: -86.767960,
+        opt_tag: "",
         use_user_position: false
     };
 
@@ -97,10 +98,17 @@
             pos = new google.maps.LatLng(settings.opt_lat, settings.opt_lon);
             map.setCenter(pos);
             map.setZoom(settings.opt_zoom);
-        }   else{
-             pos = new google.maps.LatLng(settings.default_lat, settings.default_lon);
-            map.setCenter(pos);
-            map.setZoom(settings.opt_zoom);
+        }else{
+            if(settings.override){
+                pos = new google.maps.LatLng(settings.opt_lat, settings.opt_lon);
+                map.setCenter(pos);
+                map.setZoom(settings.opt_zoom);
+            }else{
+                pos = new google.maps.LatLng(settings.default_lat, settings.default_lon);
+                map.setCenter(pos);
+                map.setZoom(settings.opt_zoom);
+            }
+            
         }
     }
 
@@ -127,9 +135,14 @@
             if(settings.use_user_position){
                 query_lat = settings.opt_lat;
                 query_lon = settings.opt_lon;
-            }else{
-                query_lat = settings.default_lat;
-                query_lon = settings.default_lon;
+            }else {
+                if(settings.override){
+                    query_lat = settings.opt_lat;
+                    query_lon = settings.opt_lon;
+                }else{
+                    query_lat = settings.default_lat;
+                    query_lon = settings.default_lon;
+                }
             }
 
             postdata = {
@@ -138,7 +151,8 @@
                   lat: query_lat,
                   lon: query_lon
                 },
-                radius: settings.opt_radius
+                radius: settings.opt_radius,
+                tag_id: settings.opt_tag
             };
             $.ajax({
                 url: settings.ajaxurl,

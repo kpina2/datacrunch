@@ -1,3 +1,14 @@
+<?php 
+  require "DBconnection.php.inc";
+  require "AjaxController.php";
+  require "TagManager.php";
+  require "NeighborhoodManager.php";
+  $tagMgr = new TagManager;
+  $tags = $tagMgr->getAll();
+
+  $neighborhoodMgr = new NeighborhoodManager;
+  $neighborhoods = $neighborhoodMgr->getAll();
+?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -43,10 +54,22 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="#">Nashville Historic Markers</a>
         </div>
         <div class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">About</a></li>
+            <li><a href="#">Tags</a></li>
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+               More <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+               <li><a href="#">Contact</a></li>
+            </ul>
+         </li>
+          </ul>
+          <<!-- form class="navbar-form navbar-right" role="form">
             <div class="form-group">
               <input type="text" placeholder="Email" class="form-control">
             </div>
@@ -54,7 +77,7 @@
               <input type="password" placeholder="Password" class="form-control">
             </div>
             <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
+          </form> -->
         </div><!--/.navbar-collapse -->
       </div>
     </div>
@@ -65,17 +88,37 @@
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
-
         <div id="map-canvas"></div>
-
-        <div class="col-md-4">
-          <p><a class="btn btn-default" role="button" id='find-near-me'>Near Me</a></p>
-          <p><a class="btn btn-default" role="button" id='show-all'>Show All</a></p>
-        </div>
-       
+      </div>
 
       <hr>
 
+      <div class="row">
+        <div class="col-md-4">
+          <a class="btn btn-default" role="button" id='find-near-me'>Near Me</a>
+          <a class="btn btn-default" role="button" id='show-all'>Show All</a>
+        </div>
+        <div class="col-md-4">
+          Neighborhoods:
+          <?php $count=0; ?>
+          <?php foreach($neighborhoods as $neighborhood): ?>
+              <a class='neighborhood-item' href='#' data-lat='<?php echo $neighborhood['lat']; ?>' data-lon='<?php echo $neighborhood['lon']; ?>'><?php echo $neighborhood['name']; ?></a>
+             
+              <?php $count++; ?>
+              <?php echo ($count < count($neighborhoods) ? ",": ""); ?>
+          <?php endforeach; ?>
+        </div>
+
+        <div class="col-md-4">
+          Tags:
+          <?php $count=0; ?>
+          <?php foreach($tags as $tag): ?>
+            
+              <a class='tag-item' href='#' data-tag_id='<?php echo $tag['id']; ?>'><?php echo $tag['name']; ?></a>
+              <?php $count++; ?>
+              <?php echo ($count < count($tags) ? ",": ""); ?>
+          <?php endforeach; ?>
+        </div>
       <footer>
         
       </footer>
@@ -105,20 +148,49 @@
             $().markerBrowser("init");
 
             $("#show-all").click(function(){
-              $().markerBrowser("getmarkers", {
+              $(this).markerBrowser("getmarkers", {
                 opt_radius: 10,
                 opt_zoom: 10,
-                use_user_position: false
+                use_user_position: false,
+                opt_tag: "",
+                override: false
               });
             });
 
             $("#find-near-me").click(function(){
-              $().markerBrowser("getmarkers", {
+              $(this).markerBrowser("getmarkers", {
                 opt_radius: 0.9,
                 opt_zoom: 13,
-                use_user_position: true
+                use_user_position: true,
+                opt_tag: "",
+                override: false
               });
             });
+
+            $(".tag-item").click(function(){
+              $(this).markerBrowser("getmarkers", {
+                opt_radius: 10,
+                opt_zoom: 10,
+                use_user_position: false,
+                opt_tag: $(this).attr("data-tag_id"),
+                override: false
+              });
+            });
+
+            $(".neighborhood-item").click(function(){
+              console.log($(this).attr("data-lat") + " " + $(this).attr("data-lon"));
+
+              $(this).markerBrowser("getmarkers", {
+                opt_radius: 0.5,
+                opt_zoom: 14,
+                use_user_position: false,
+                opt_lat: $(this).attr("data-lat"),
+                opt_lon: $(this).attr("data-lon"),
+                opt_tag: "",
+                override: true
+              });
+            });
+
           });
           
         </script>
