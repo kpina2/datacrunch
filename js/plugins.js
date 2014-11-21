@@ -47,16 +47,18 @@
             if($.isEmptyObject(user_position)){
                 navigator.geolocation.getCurrentPosition(showPosition);
             }else{
-                settings.opt_lat = user_position.coords.latitude;
-                settings.opt_lon = user_position.coords.longitude;
+                settings.user_pos_lat = user_position.coords.latitude;
+                settings.user_pos_lon = user_position.coords.longitude;
             }
         }
     }
     function showPosition(pos){
         user_position = pos;
-        settings.opt_lat = user_position.coords.latitude;
-        settings.opt_lon = user_position.coords.longitude
+        settings.user_pos_lat = user_position.coords.latitude;
+        settings.user_pos_lon = user_position.coords.longitude
+         $("#find-near-me").show();
     }
+    
     function removeMarkers() {
         // console.log(markers);
       for (var i = 0; i < markers.length; i++) {
@@ -95,17 +97,17 @@
         }
 
         if(settings.use_user_position){
-            pos = new google.maps.LatLng(settings.opt_lat, settings.opt_lon);
-            map.setCenter(pos);
+            pos = new google.maps.LatLng(settings.user_pos_lat, settings.user_pos_lon);
+            map.panTo(pos);
             map.setZoom(settings.opt_zoom);
         }else{
             if(settings.override){
                 pos = new google.maps.LatLng(settings.opt_lat, settings.opt_lon);
-                map.setCenter(pos);
+                map.panTo(pos);
                 map.setZoom(settings.opt_zoom);
             }else{
                 pos = new google.maps.LatLng(settings.default_lat, settings.default_lon);
-                map.setCenter(pos);
+                map.panTo(pos);
                 map.setZoom(settings.opt_zoom);
             }
             
@@ -133,9 +135,10 @@
                 $.extend(settings,options);
             }
             if(settings.use_user_position){
-                query_lat = settings.opt_lat;
-                query_lon = settings.opt_lon;
-            }else {
+                console.log("asdf");
+                query_lat = settings.user_pos_lat;
+                query_lon = settings.user_pos_lon;
+            }else{
                 if(settings.override){
                     query_lat = settings.opt_lat;
                     query_lon = settings.opt_lon;
@@ -144,7 +147,7 @@
                     query_lon = settings.default_lon;
                 }
             }
-
+            console.log(query_lat);
             postdata = {
                 cmd: "markers",
                 coords: {
